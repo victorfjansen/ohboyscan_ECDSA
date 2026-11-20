@@ -1,0 +1,45 @@
+# /etc/ohboyscan/ohboyscan.conf — OhBoyScan
+# Permissões recomendadas: root:root 0600 (contém a senha do usuário de API).
+
+[router]
+# Enlace ponto a ponto RPi <-> MikroTik (ver deploy/mikrotik/setup.rsc)
+host = 10.99.0.1
+# 8728 = API (texto claro) | 8729 = API-SSL. Vazio/0 => escolhe pela opção tls.
+port = 0
+user = ohboyscan
+# Prefira password_file (0600) ou a variável OHBOY_ROUTER_PASSWORD.
+password_file = /etc/ohboyscan/router.pass
+tls = true
+# Pinning do certificado do roteador (SHA-256 do DER). Obtenha com `ohboyscan probe`
+# ou no RouterOS: /certificate print detail (campo fingerprint).
+tls_fingerprint =
+# Alternativa ao pinning: CA que assinou o certificado do roteador
+tls_ca_file =
+timeout_ms = 5000
+
+[audit]
+# Blocos críticos de configuração (caminhos da API). Fixados no baseline assinado.
+sections = /ip/service, /ip/firewall/filter, /user
+# Campos voláteis ignorados na normalização canônica (contadores, timestamps).
+ignore_fields = bytes, packets, last-logged-in, run-count, last-started, invalid
+audit_scripts = true
+scripts_path = /system/script
+
+[paths]
+data_dir = /var/lib/ohboyscan
+log_file = /var/log/ohboyscan/audit.jsonl
+lock_file = /run/ohboyscan.lock
+
+[alert]
+syslog = true
+# Executado (sh -c) quando há achados; o evento JSON chega pelo stdin.
+# Webhook:
+# command = curl -fsS -m 10 -H 'Content-Type: application/json' --data-binary @- https://hooks.exemplo/ohboyscan
+# E-mail (msmtp):
+# command = (printf 'Subject: [OhBoyScan] ALERTA %s\n\n' "$OHBOY_HOST"; cat) | msmtp seguranca@exemplo.br
+command =
+on_ok = false
+
+[crypto]
+# true => nonce determinístico RFC 6979 (OpenSSL >= 3.2). Padrão: k aleatório do CSPRNG do kernel.
+deterministic_nonce = false

@@ -1,0 +1,29 @@
+{
+  "/system/identity": [{"name": "MikroTik-Lab"}],
+  "/system/resource": [{"version": "7.16.2 (stable)", "board-name": "hEX", "uptime": "3d01:02:03", "cpu-load": "2"}],
+  "/ip/service": [
+    {".id": "*0", "name": "telnet",  "port": "23",   "disabled": "true",  "address": "", "invalid": "false"},
+    {".id": "*1", "name": "ftp",     "port": "21",   "disabled": "true",  "address": "", "invalid": "false"},
+    {".id": "*2", "name": "www",     "port": "80",   "disabled": "true",  "address": "", "invalid": "false"},
+    {".id": "*3", "name": "ssh",     "port": "22",   "disabled": "false", "address": "192.168.88.0/24", "invalid": "false"},
+    {".id": "*4", "name": "www-ssl", "port": "443",  "disabled": "true",  "address": "", "invalid": "false", "certificate": "none"},
+    {".id": "*5", "name": "api",     "port": "8728", "disabled": "false", "address": "10.99.0.2/32", "invalid": "false"},
+    {".id": "*6", "name": "winbox",  "port": "8291", "disabled": "false", "address": "192.168.88.0/24", "invalid": "false"},
+    {".id": "*7", "name": "api-ssl", "port": "8729", "disabled": "false", "address": "10.99.0.2/32", "invalid": "false", "certificate": "api-cert"}
+  ],
+  "/ip/firewall/filter": [
+    {".id": "*1", "chain": "input", "action": "accept", "connection-state": "established,related,untracked", "comment": "defconf: accept established,related,untracked", "bytes": "918273", "packets": "8123", "disabled": "false", "dynamic": "false"},
+    {".id": "*2", "chain": "input", "action": "drop", "connection-state": "invalid", "comment": "defconf: drop invalid", "bytes": "120", "packets": "2", "disabled": "false", "dynamic": "false"},
+    {".id": "*3", "chain": "input", "action": "accept", "protocol": "icmp", "comment": "defconf: accept ICMP", "bytes": "8400", "packets": "100", "disabled": "false", "dynamic": "false"},
+    {".id": "*4", "chain": "input", "action": "accept", "src-address": "10.99.0.2", "protocol": "tcp", "dst-port": "8728,8729", "comment": "ohboyscan audit link", "bytes": "51200", "packets": "640", "disabled": "false", "dynamic": "false"},
+    {".id": "*5", "chain": "input", "action": "drop", "in-interface-list": "!LAN", "comment": "defconf: drop all not coming from LAN", "bytes": "77777", "packets": "999", "disabled": "false", "dynamic": "false"}
+  ],
+  "/user": [
+    {".id": "*1", "name": "admin",     "group": "full", "address": "192.168.88.0/24", "disabled": "false", "last-logged-in": "2026-11-19 10:00:00", "comment": "system default user"},
+    {".id": "*2", "name": "ohboyscan", "group": "audit", "address": "10.99.0.2/32", "disabled": "false", "last-logged-in": "2026-11-20 14:00:00", "comment": "auditor read-only"}
+  ],
+  "/system/script": [
+    {".id": "*1", "name": "daily-backup", "owner": "admin", "policy": "ftp,read,write,policy,test", "dont-require-permissions": "false", "run-count": "42", "last-started": "2026-11-20 03:00:00", "source": "/system backup save name=(\"daily-\" . [/system clock get date])\n:log info \"backup ok\""},
+    {".id": "*2", "name": "wan-watchdog", "owner": "admin", "policy": "read,write,test", "dont-require-permissions": "false", "run-count": "1440", "last-started": "2026-11-20 14:00:00", "source": ":if ([/ping 8.8.8.8 count=3] = 0) do={ :log warning \"WAN down\" }"}
+  ]
+}

@@ -1,0 +1,4 @@
+# /etc/cron.d/ohboyscan — auditoria periódica (alternativa ao serviço systemd)
+SHELL=/bin/sh
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+*/5 * * * * root /usr/bin/ohboyscan -c /etc/ohboyscan/ohboyscan.conf audit --quiet
